@@ -31,6 +31,7 @@ public class main extends javax.swing.JFrame {
      */
     public main() {
         initComponents();
+        this.setTitle("Yurtiçi Ticaret Uzman Sistemi");
         int ekranGenislik = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         int ekranYukseklik = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
         int uygulamaGenislik = getWidth();
@@ -52,6 +53,8 @@ public class main extends javax.swing.JFrame {
     ArrayList<List<veriler>> malzemeSiparis; // Siparişe eklenen malzemelerin listesi
     List<veriler> aracUygunList; // Aradığımız ton ve hacim değerlerini karşılayan araçlar listesi
     ArrayList<siparis> siparisList;
+    ArrayList<Boolean> musteriKaraList; // Müşterilerin alım izinlerini tutan liste
+    boolean karaListe = false; // Seçili müşterinin alım izni olup olmadığı
     boolean ton = true;
     int sehirMesafe = 0;
     int aracID = 0;
@@ -211,7 +214,7 @@ public class main extends javax.swing.JFrame {
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("UZMAN GÖRÜŞÜ"));
 
         jTextArea1.setColumns(20);
-        jTextArea1.setFont(new java.awt.Font("DejaVu Sans", 1, 12)); // NOI18N
+        jTextArea1.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
@@ -343,6 +346,7 @@ public class main extends javax.swing.JFrame {
         int index = jComboBox2.getSelectedIndex();
 
         sehirMesafe = sehirMesafeList.get(index);
+        karaListe = musteriKaraList.get(index);
     }//GEN-LAST:event_jComboBox2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -377,7 +381,7 @@ public class main extends javax.swing.JFrame {
             mesajYaz("Bu aracın toplam taşıma masrafı: " + (arac.getAracKatsayi() * sehirMesafe) + " TL", 'd');
         } else {
             mesajYaz("Bu satışı yapmamalısınız. Eğer bu satışı yaparsanız " + String.valueOf(maliyet - beklenenSatisFiyati)
-                    + "TL zarar edersiniz", 'w');
+                    + "TL zarar edersiniz", 'u');
         }
 
     }
@@ -385,7 +389,14 @@ public class main extends javax.swing.JFrame {
     // Sipariş oluştur şimdilik tek ürünlü bir sipariş oluşturulabiliyor
     boolean siparisOlustur() {
         siparisList = new ArrayList<>();
-
+        if(karaListe){
+            mesajYaz("Seçmiş olduğunuz müşterinin ödemediği borçları bulunduğu için satış yapılamamaktadır", 'w');
+            return false;
+        }
+        if(!malzemeList.get(0).isMalzemeStok()){
+            mesajYaz("Ürün stoklarınızda bulunmadığı için bu satışı gerçekleştiremezsiniz", 'w');
+            return false;
+        }
         controller.siparis siparis = new controller.siparis();
         siparis.setIskonto(Float.parseFloat(jTextField2.getText().trim()));
         siparis.setMesafe(sehirMesafe);
@@ -447,6 +458,8 @@ public class main extends javax.swing.JFrame {
             painter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
         } else if (type == 'd') {
             painter = new DefaultHighlighter.DefaultHighlightPainter(Color.WHITE);
+        } else if (type == 'u'){
+            painter = new DefaultHighlighter.DefaultHighlightPainter(Color.orange);
         }
 
         try {
@@ -484,6 +497,7 @@ public class main extends javax.swing.JFrame {
         List<controller.veriler> liste = null;
         sehirIdList = new ArrayList<>();
         sehirMesafeList = new ArrayList<>();
+        musteriKaraList = new ArrayList<>();
         try {
             liste = new controller.veriler().musterileriOku();
         } catch (SQLException ex) {
@@ -493,10 +507,12 @@ public class main extends javax.swing.JFrame {
         model.addElement("Müşteriler");
         sehirIdList.add(999999);
         sehirMesafeList.add(999999);
+        musteriKaraList.add(false);
         for (int i = 0; i < liste.size(); i++) {
             model.addElement(liste.get(i).getMusteriAd());
             sehirIdList.add(liste.get(i).getSehirID());
             sehirMesafeList.add(liste.get(i).getSehirMesafe());
+            musteriKaraList.add(liste.get(i).isMusteriKaraListe());
         }
         jComboBox2.setModel(model);
         jComboBox2.repaint();

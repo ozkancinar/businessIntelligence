@@ -27,12 +27,12 @@ public class ekle extends javax.swing.JFrame {
      */
     public ekle() {
         initComponents();
+        this.setTitle("Malzeme - Müşteri - Araç Ekle");
         int ekranGenislik = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         int ekranYukseklik = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
         int uygulamaGenislik = getWidth();
         int uygulamaYukseklik = getHeight();
         setLocation((ekranGenislik - uygulamaGenislik) / 2, (ekranYukseklik - uygulamaYukseklik) / 2);
-
         combosehirDoldur();
     }
 
@@ -79,6 +79,9 @@ public class ekle extends javax.swing.JFrame {
         jTextField8 = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
+        jLabel18 = new javax.swing.JLabel();
+        jTextField10 = new javax.swing.JTextField();
+        jLabel19 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -256,6 +259,11 @@ public class ekle extends javax.swing.JFrame {
             }
         });
 
+        jLabel18.setText("Kilometre Başına Aldığı Ücret");
+
+        jLabel19.setFont(new java.awt.Font("Noto Sans", 1, 12)); // NOI18N
+        jLabel19.setText("TL");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -270,20 +278,29 @@ public class ekle extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel15)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jLabel15)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jLabel12)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGap(18, 18, 18)
-                                    .addComponent(jTextField8))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel12)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel13)
+                                        .addComponent(jLabel14)))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel18)
                                     .addGap(18, 18, 18)
-                                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGap(18, 18, 18)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel13)
-                                .addComponent(jLabel14)))))
-                .addContainerGap(293, Short.MAX_VALUE))
+                                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jLabel19)))
+                            .addGap(0, 0, Short.MAX_VALUE))))
+                .addGap(256, 256, 256))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -302,9 +319,14 @@ public class ekle extends javax.swing.JFrame {
                     .addComponent(jLabel15)
                     .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14))
-                .addGap(29, 29, 29)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18)
+                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel19))
+                .addGap(43, 43, 43)
                 .addComponent(jButton3)
-                .addContainerGap(249, Short.MAX_VALUE))
+                .addContainerGap(196, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Araç Ekle", jPanel1);
@@ -346,6 +368,7 @@ public class ekle extends javax.swing.JFrame {
                 && !jTextField9.getText().trim().equals("")) {
 
             boolean durum = malzemeKaydet();
+            
             if (durum) {
                 jTextField1.setText("");
                 jTextField2.setText("");
@@ -387,6 +410,8 @@ public class ekle extends javax.swing.JFrame {
                 jTextField6.setText("");
                 jTextField7.setText("");
                 jTextField8.setText("");
+                jTextField10.setText("");
+                
 
             } else {
                 JOptionPane.showMessageDialog(this, "Kaydedilirken Hata Oldu", "SQL HATA", JOptionPane.ERROR_MESSAGE);
@@ -411,6 +436,7 @@ public class ekle extends javax.swing.JFrame {
 
         try {
             durum = veri.malzemeEkle(veri);
+            durum = veri.stokEkle(jTextField1.getText().trim());
         } catch (SQLException ex) {
             Logger.getLogger(ekle.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(this, "SQL'e kaydedilirken hata oldu" + ex.getMessage(), "SQL Hatası", JOptionPane.ERROR_MESSAGE);
@@ -445,7 +471,7 @@ public class ekle extends javax.swing.JFrame {
         veri.setAracPlaka(jTextField6.getText().trim().toUpperCase().replace(" ", ""));
         veri.setAracTon(Integer.parseInt(jTextField7.getText().trim()));
         veri.setAracHacim(Integer.parseInt(jTextField8.getText().trim()));
-
+        veri.setAracKatsayi(Float.parseFloat(jTextField10.getText().trim()));
         try {
             durum = veri.aracEkle(veri);
         } catch (SQLException ex) {
@@ -511,6 +537,8 @@ public class ekle extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -524,6 +552,7 @@ public class ekle extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;

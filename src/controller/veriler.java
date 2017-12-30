@@ -23,6 +23,7 @@ public class veriler {
     private String sehirAd, malzemeAd, musteriAd, aracPlaka;
     private int aracTon, aracHacim, aracId, malzemeAgirlik, malzemeHacim, sehirID, sehirMesafe, malzemeID;
     private float malzemeMaliyet, malzemeFiyat, aracKatsayi;
+    private boolean musteriKaraListe, malzemeStok;
 
     PreparedStatement ps;
     ResultSet rs;
@@ -37,7 +38,6 @@ public class veriler {
         baglan.baglan();
 
         String sorgu = "insert into malzemeler (m_ad, m_fiyat, m_agirlik, m_hacim, m_maliyet) values (?,?,?,?,?)";
-       
         try {
         ps = baglan.con.prepareStatement(sorgu);
         ps.setString(1, veri.getMalzemeAd());
@@ -56,18 +56,36 @@ public class veriler {
 
     }
     
+    // Stok ekle
+    public boolean stokEkle(String ad) throws SQLException{
+        baglanti baglan = new baglanti();
+        baglan.baglan();
+        String sorgu = "insert into stoklar (malz_id) values ((SELECT id from malzemeler WHERE m_ad='"+ad+"'))";
+        try {
+            ps = baglan.con.prepareStatement(sorgu);
+             ps.executeUpdate();
+             baglan.con.close();
+             return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(veriler.class.getName()).log(Level.SEVERE, null, ex);
+            baglan.con.close();
+            return false;
+        }
+    }
+    
     // SQL'e Araç Ekle
     public boolean aracEkle(veriler a_ekle) throws SQLException{
         baglanti baglan = new baglanti();
         baglan.baglan();
 
-        String sorgu = "insert into araclar (a_plaka, a_tonkapasite, a_hacimkapasite) values (?,?,?)";
+        String sorgu = "insert into araclar (a_plaka, a_tonkapasite, a_hacimkapasite, a_katsayi) values (?,?,?,?)";
         
         try {
             ps = baglan.con.prepareStatement(sorgu);
             ps.setString(1, a_ekle.getAracPlaka());
             ps.setInt(2, a_ekle.getAracTon());
             ps.setInt(3, a_ekle.getAracHacim());
+            ps.setFloat(4, a_ekle.getAracKatsayi());
             ps.executeUpdate();
             baglan.con.close();
             return true;
@@ -113,7 +131,7 @@ public class veriler {
         List<veriler> liste = new ArrayList<>();
         veriler[] veri = null;
         String sorgu;
-        sorgu = "select m.musteri_ad, s.sehir_ad, m.sehir_id, s.sehir_mesafe from musteriler as m INNER JOIN sehirler as s ON m.sehir_id = s.id";
+        sorgu = "select m.musteri_ad, s.sehir_ad, m.sehir_id, s.sehir_mesafe, m.kara_liste from musteriler as m INNER JOIN sehirler as s ON m.sehir_id = s.id";
         ps = baglanti.con.prepareStatement(sorgu);
         rs = ps.executeQuery(sorgu);
         int sayac = 0;
@@ -130,6 +148,7 @@ public class veriler {
             veri[i].setSehirAd(rs.getString(2));
             veri[i].setSehirID(rs.getInt(3));
             veri[i].setSehirMesafe(rs.getInt(4));
+            veri[i].setMusteriKaraListe(rs.getBoolean(5));
             liste.add(veri[i]);
             i++;
         }
@@ -180,7 +199,7 @@ public class veriler {
         List<veriler> liste = new ArrayList<>();
         veriler[] veri = null;
         String sorgu;
-        sorgu = "select * from malzemeler where id="+id+"";
+        sorgu = "select * from malzemeler as m INNER JOIN stoklar as s ON m.id=s.malz_id where m.id="+id+"";
         ps = baglanti.con.prepareStatement(sorgu);
         rs = ps.executeQuery(sorgu);
         int sayac = 0;
@@ -198,7 +217,7 @@ public class veriler {
             veri[i].setMalzemeAgirlik(rs.getInt("m_agirlik"));
             veri[i].setMalzemeHacim(rs.getInt("m_hacim"));
             veri[i].setMalzemeMaliyet(rs.getFloat("m_maliyet"));
-            
+            veri[i].setMalzemeStok(rs.getBoolean("stok"));
             liste.add(veri[i]);
             i++;
         }
@@ -358,6 +377,24 @@ public class veriler {
     public int getMalzemeHacim() {
         return malzemeHacim;
     }
+
+    public boolean isMusteriKaraListe() {
+        return musteriKaraListe;
+    }
+
+    public void setMusteriKaraListe(boolean musteriKaraListe) {
+        this.musteriKaraListe = musteriKaraListe;
+    }
+
+    public boolean isMalzemeStok() {
+        return malzemeStok;
+    }
+
+    public void setMalzemeStok(boolean malzemeStok) {
+        this.malzemeStok = malzemeStok;
+    }
+
+   
 
     public void setMalzemeHacim(int malzemeHacim) {
         this.malzemeHacim = malzemeHacim;
